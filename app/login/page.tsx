@@ -29,7 +29,7 @@ export default function LoginPage() {
       formData.append("username", username)
       formData.append("password", password)
 
-      const response = await fetch("/login", {
+      const response = await fetch("/token", {
         method: "POST",
         body: formData,
       })

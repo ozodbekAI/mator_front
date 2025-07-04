@@ -2,18 +2,35 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData()
 
-    // Debug uchun
-    console.log("API_BASE_URL:", process.env.API_BASE_URL)
-    console.log("Login attempt for:", formData.get("username"))
+    // Environment variable'ni tekshirish
+    const API_BASE_URL = process.env.API_BASE_URL
 
-    const API_BASE_URL = process.env.API_BASE_URL || "http://127.0.0.1:8000"
+    console.log("Environment check:")
+    console.log("API_BASE_URL from env:", API_BASE_URL)
+    console.log(
+      "All env vars:",
+      Object.keys(process.env).filter((key) => key.includes("API")),
+    )
+
+    if (!API_BASE_URL) {
+      return Response.json(
+        {
+          detail: "API_BASE_URL environment variable not set",
+          available_vars: Object.keys(process.env).filter((key) => key.includes("API")),
+        },
+        { status: 500 },
+      )
+    }
+
+    console.log("Making request to:", `${API_BASE_URL}/token`)
 
     const response = await fetch(`${API_BASE_URL}/token`, {
       method: "POST",
       body: formData,
     })
 
-    console.log("Login response status:", response.status)
+    console.log("Response status:", response.status)
+    console.log("Response headers:", Object.fromEntries(response.headers.entries()))
 
     const data = await response.json()
 
@@ -24,6 +41,13 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error("Login API Route Error:", error)
-    return Response.json({ detail: "Server xatosi", error: error.message }, { status: 500 })
+    return Response.json(
+      {
+        detail: "Server xatosi",
+        error: error.message,
+        stack: error.stack,
+      },
+      { status: 500 },
+    )
   }
 }

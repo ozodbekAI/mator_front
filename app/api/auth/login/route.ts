@@ -2,10 +2,18 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData()
 
-    const response = await fetch(`${process.env.API_BASE_URL}/token`, {
+    // Debug uchun
+    console.log("API_BASE_URL:", process.env.API_BASE_URL)
+    console.log("Login attempt for:", formData.get("username"))
+
+    const API_BASE_URL = process.env.API_BASE_URL || "http://127.0.0.1:8000"
+
+    const response = await fetch(`${API_BASE_URL}/token`, {
       method: "POST",
       body: formData,
     })
+
+    console.log("Login response status:", response.status)
 
     const data = await response.json()
 
@@ -15,6 +23,7 @@ export async function POST(request: Request) {
       return Response.json(data, { status: response.status })
     }
   } catch (error) {
-    return Response.json({ detail: "Server xatosi" }, { status: 500 })
+    console.error("Login API Route Error:", error)
+    return Response.json({ detail: "Server xatosi", error: error.message }, { status: 500 })
   }
 }

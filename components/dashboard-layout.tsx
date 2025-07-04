@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         return
       }
 
-      const response = await fetch("/api/users/me", {
+      const response = await fetch("/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
